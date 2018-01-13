@@ -172,7 +172,7 @@ Usage: " PROGRAM_NAME " [OPTIONS]\n\
 Options:\n\
   -a, --algo=ALGO       specify the algorithm to use\n\
                           yescrypt  yescrypt (default)\n\
-                          scrypt    scrypt(1024, 1, 1) (default)\n\
+                          scrypt    scrypt(1024, 1, 1)\n\
                           scrypt:N  scrypt(N, 1, 1)\n\
                           sha256d   SHA-256d\n\
   -o, --url=URL         URL of mining server\n\
@@ -1216,9 +1216,9 @@ static void *miner_thread(void *userdata)
 		/* scan nonces for a proof-of-work hash */
 		switch (opt_algo) {
 		case ALGO_YESCRYPT:
-		rc = scanhash_yescrypt(thr_id, work.data, work.target,
+			rc = scanhash_yescrypt(thr_id, work.data, work.target,
 					       max_nonce, &hashes_done);
-		break;
+			break;
 
 		case ALGO_SCRYPT:
 			rc = scanhash_scrypt(thr_id, work.data, scratchbuf, work.target,
@@ -1514,6 +1514,17 @@ static void show_version_and_exit(void)
 		" NEON"
 #endif
 #endif
+
+#if defined(USE_ASM) && defined(__aarch64__)
+		" AArch64"
+#if defined(__ARM_ARCH_8A)
+		" ARMv8A"
+#endif
+#if defined(__ARM_NEON) 
+		" AdvancedSIMD"
+#endif
+#endif
+
 #if defined(USE_ASM) && (defined(__powerpc__) || defined(__ppc__) || defined(__PPC__))
 		" PowerPC"
 #if defined(__ALTIVEC__)
