@@ -48,6 +48,9 @@ case $target in
   arm*-*-*)
     have_arm=true
     ;;
+  aarch64*-*-*)
+    have_arm=true
+    ;;
   powerpc*-*-*)
     have_ppc=true
     ;;
