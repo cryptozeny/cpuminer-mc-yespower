@@ -56,70 +56,6 @@ static inline void drop_policy(void)
 #endif
 }
 
-#ifdef __BIONIC__
-#define pthread_setaffinity_np(tid,sz,s) {} /* only do process affinity */
-#endif
-
-static void affine_to_cpu_mask(int id, unsigned long mask) {
-	cpu_set_t set;
-	CPU_ZERO(&set);
-	for (uint8_t i = 0; i < num_processors; i++) {
-		// cpu mask
-		if (mask & (1UL<<i)) { CPU_SET(i, &set); }
-	}
-	if (id == -1) {
-		// process affinity
-		sched_setaffinity(0, sizeof(&set), &set);
-	} else {
-		// thread only
-		pthread_setaffinity_np(thr_info[id].pth, sizeof(&set), &set);
-	}
-}
-
-#elif defined(WIN32) /* Windows */
-static inline void drop_policy(void) { }
-static void affine_to_cpu_mask(int id, unsigned long mask) {
-	if (id == -1)
-		SetProcessAffinityMask(GetCurrentProcess(), mask);
-	else
-		SetThreadAffinityMask(GetCurrentThread(), mask);
-}
-#else
-static inline void drop_policy(void) { }
-static void affine_to_cpu_mask(int id, unsigned long mask) { }
-#endif
-
-// static inline void affine_to_cpu(int id, int cpu)
-// {
-// 	cpu_set_t set;
-
-// 	CPU_ZERO(&set);
-// 	CPU_SET(cpu, &set);
-// 	sched_setaffinity(0, sizeof(set), &set);
-// }
-// #elif defined(__FreeBSD__) /* FreeBSD specific policy and affinity management */
-// #include <sys/cpuset.h>
-// static inline void drop_policy(void)
-// {
-// }
-
-// static inline void affine_to_cpu(int id, int cpu)
-// {
-// 	cpuset_t set;
-// 	CPU_ZERO(&set);
-// 	CPU_SET(cpu, &set);
-// 	cpuset_setaffinity(CPU_LEVEL_WHICH, CPU_WHICH_TID, -1, sizeof(cpuset_t), &set);
-// }
-// #else
-// static inline void drop_policy(void)
-// {
-// }
-
-// static inline void affine_to_cpu(int id, int cpu)
-// {
-// }
-// #endif
-
 enum workio_commands {
 	WC_GET_WORK,
 	WC_SUBMIT_WORK,
@@ -312,6 +248,39 @@ static time_t g_work_time;
 static pthread_mutex_t g_work_lock;
 static bool submit_old = false;
 static char *lp_id;
+
+#ifdef __BIONIC__
+#define pthread_setaffinity_np(tid,sz,s) {} /* only do process affinity */
+#endif
+
+static void affine_to_cpu_mask(int id, unsigned long mask) {
+	cpu_set_t set;
+	CPU_ZERO(&set);
+	for (uint8_t i = 0; i < num_processors; i++) {
+		// cpu mask
+		if (mask & (1UL<<i)) { CPU_SET(i, &set); }
+	}
+	if (id == -1) {
+		// process affinity
+		sched_setaffinity(0, sizeof(&set), &set);
+	} else {
+		// thread only
+		pthread_setaffinity_np(thr_info[id].pth, sizeof(&set), &set);
+	}
+}
+
+#elif defined(WIN32) /* Windows */
+static inline void drop_policy(void) { }
+static void affine_to_cpu_mask(int id, unsigned long mask) {
+	if (id == -1)
+		SetProcessAffinityMask(GetCurrentProcess(), mask);
+	else
+		SetThreadAffinityMask(GetCurrentThread(), mask);
+}
+#else
+static inline void drop_policy(void) { }
+static void affine_to_cpu_mask(int id, unsigned long mask) { }
+#endif
 
 static inline void work_free(struct work *w)
 {
