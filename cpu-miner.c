@@ -56,36 +56,69 @@ static inline void drop_policy(void)
 #endif
 }
 
-static inline void affine_to_cpu(int id, int cpu)
-{
+#ifdef __BIONIC__
+#define pthread_setaffinity_np(tid,sz,s) {} /* only do process affinity */
+#endif
+
+static void affine_to_cpu_mask(int id, unsigned long mask) {
 	cpu_set_t set;
-
 	CPU_ZERO(&set);
-	CPU_SET(cpu, &set);
-	sched_setaffinity(0, sizeof(set), &set);
-}
-#elif defined(__FreeBSD__) /* FreeBSD specific policy and affinity management */
-#include <sys/cpuset.h>
-static inline void drop_policy(void)
-{
+	for (uint8_t i = 0; i < num_processors; i++) {
+		// cpu mask
+		if (mask & (1UL<<i)) { CPU_SET(i, &set); }
+	}
+	if (id == -1) {
+		// process affinity
+		sched_setaffinity(0, sizeof(&set), &set);
+	} else {
+		// thread only
+		pthread_setaffinity_np(thr_info[id].pth, sizeof(&set), &set);
+	}
 }
 
-static inline void affine_to_cpu(int id, int cpu)
-{
-	cpuset_t set;
-	CPU_ZERO(&set);
-	CPU_SET(cpu, &set);
-	cpuset_setaffinity(CPU_LEVEL_WHICH, CPU_WHICH_TID, -1, sizeof(cpuset_t), &set);
+#elif defined(WIN32) /* Windows */
+static inline void drop_policy(void) { }
+static void affine_to_cpu_mask(int id, unsigned long mask) {
+	if (id == -1)
+		SetProcessAffinityMask(GetCurrentProcess(), mask);
+	else
+		SetThreadAffinityMask(GetCurrentThread(), mask);
 }
 #else
-static inline void drop_policy(void)
-{
-}
-
-static inline void affine_to_cpu(int id, int cpu)
-{
-}
+static inline void drop_policy(void) { }
+static void affine_to_cpu_mask(int id, unsigned long mask) { }
 #endif
+
+// static inline void affine_to_cpu(int id, int cpu)
+// {
+// 	cpu_set_t set;
+
+// 	CPU_ZERO(&set);
+// 	CPU_SET(cpu, &set);
+// 	sched_setaffinity(0, sizeof(set), &set);
+// }
+// #elif defined(__FreeBSD__) /* FreeBSD specific policy and affinity management */
+// #include <sys/cpuset.h>
+// static inline void drop_policy(void)
+// {
+// }
+
+// static inline void affine_to_cpu(int id, int cpu)
+// {
+// 	cpuset_t set;
+// 	CPU_ZERO(&set);
+// 	CPU_SET(cpu, &set);
+// 	cpuset_setaffinity(CPU_LEVEL_WHICH, CPU_WHICH_TID, -1, sizeof(cpuset_t), &set);
+// }
+// #else
+// static inline void drop_policy(void)
+// {
+// }
+
+// static inline void affine_to_cpu(int id, int cpu)
+// {
+// }
+// #endif
 
 enum workio_commands {
 	WC_GET_WORK,
@@ -132,6 +165,7 @@ static int opt_scantime = 5;
 static enum algos opt_algo = ALGO_YESCRYPT;
 static int opt_scrypt_n = 1024;
 static int opt_n_threads;
+int64_t opt_affinity = -1L;
 static int num_processors;
 static char *rpc_url;
 static char *rpc_userpass;
@@ -207,6 +241,7 @@ Options:\n\
   -B, --background      run the miner in the background\n"
 #endif
 "\
+      --cpu-affinity    set process affinity to cpu core(s), mask 0x3 for cores 0 and 1\n\
       --benchmark       run in offline benchmark mode\n\
   -c, --config=FILE     load a JSON-format configuration file\n\
   -V, --version         display version information and exit\n\
@@ -232,6 +267,7 @@ static struct option const options[] = {
 	{ "coinbase-addr", 1, NULL, 1013 },
 	{ "coinbase-sig", 1, NULL, 1015 },
 	{ "config", 1, NULL, 'c' },
+	{ "cpu-affinity", 1, NULL, 1020 },
 	{ "debug", 0, NULL, 'D' },
 	{ "help", 0, NULL, 'h' },
 	{ "no-gbt", 0, NULL, 1011 },
@@ -1125,14 +1161,29 @@ static void *miner_thread(void *userdata)
 		drop_policy();
 	}
 
+	/* Cpu thread affinity */
+	if (num_processors > 1) {
+		if (opt_affinity == -1 && opt_n_threads > 1) {
+			if (opt_debug)
+				applog(LOG_DEBUG, "Binding thread %d to cpu %d (mask %x)", thr_id,
+						thr_id % num_processors, (1 << (thr_id % num_processors)));
+			affine_to_cpu_mask(thr_id, 1UL << (thr_id % num_processors));
+		} else if (opt_affinity != -1L) {
+			if (opt_debug)
+				applog(LOG_DEBUG, "Binding thread %d to cpu mask %x", thr_id,
+						opt_affinity);
+			affine_to_cpu_mask(thr_id, (unsigned long)opt_affinity);
+		}
+	}
+
 	/* Cpu affinity only makes sense if the number of threads is a multiple
 	 * of the number of CPUs */
-	if (num_processors > 1 && opt_n_threads % num_processors == 0) {
-		if (!opt_quiet)
-			applog(LOG_INFO, "Binding thread %d to cpu %d",
-			       thr_id, thr_id % num_processors);
-		affine_to_cpu(thr_id, thr_id % num_processors);
-	}
+	// if (num_processors > 1 && opt_n_threads % num_processors == 0) {
+	// 	if (!opt_quiet)
+	// 		applog(LOG_INFO, "Binding thread %d to cpu %d",
+	// 		       thr_id, thr_id % num_processors);
+	// 	affine_to_cpu(thr_id, thr_id % num_processors);
+	// }
 
 	if (opt_algo == ALGO_SCRYPT) {
 		scratchbuf = scrypt_buffer_alloc(opt_scrypt_n);
@@ -1561,6 +1612,7 @@ static void parse_arg(int key, char *arg, char *pname)
 {
 	char *p;
 	int v, i;
+	uint64_t ul;
 
 	switch(key) {
 	case 'a':
@@ -1779,6 +1831,16 @@ static void parse_arg(int key, char *arg, char *pname)
 		}
 		strcpy(coinbase_sig, arg);
 		break;
+	case 1020:
+		p = strstr(arg, "0x");
+		if (p)
+			ul = strtoul(p, NULL, 16);
+		else
+			ul = atol(arg);
+		if (ul > (1UL<<num_processors)-1)
+			ul = -1;
+		opt_affinity = ul;
+		break;
 	case 'S':
 		use_syslog = true;
 		break;
@@ -1867,17 +1929,46 @@ static void signal_handler(int sig)
 }
 #endif
 
+static void show_credits()
+{
+	printf("** " PACKAGE_NAME " " PACKAGE_VERSION " by macchky@github **\n");
+	printf("ZNY donation address: Zq83XMtc9gShkgi4bNNHWA4FDbMe8dFQmD (macchky)\n\n");
+}
+
 int main(int argc, char *argv[])
 {
 	struct thr_info *thr;
 	long flags;
 	int i;
 
+	show_credits();
+
 	rpc_user = strdup("");
 	rpc_pass = strdup("");
 
+#if defined(WIN32)
+	SYSTEM_INFO sysinfo;
+	GetSystemInfo(&sysinfo);
+	num_processors = sysinfo.dwNumberOfProcessors;
+#elif defined(_SC_NPROCESSORS_CONF)
+	num_processors = sysconf(_SC_NPROCESSORS_CONF);
+#elif defined(CTL_HW) && defined(HW_NCPU)
+	int req[] = { CTL_HW, HW_NCPU };
+	size_t len = sizeof(num_processors);
+	sysctl(req, 2, &num_processors, &len, NULL, 0);
+#else
+	num_processors = 1;
+#endif
+	if (num_processors < 1)
+		num_processors = 1;
+
 	/* parse command line */
 	parse_cmdline(argc, argv);
+
+	if (!opt_n_threads)
+		opt_n_threads = num_processors;
+	if (!opt_n_threads)
+		opt_n_threads = 1;
 
 	if (!opt_benchmark && !rpc_url) {
 		fprintf(stderr, "%s: no URL supplied\n", argv[0]);
@@ -1923,23 +2014,11 @@ int main(int argc, char *argv[])
 	}
 #endif
 
-#if defined(WIN32)
-	SYSTEM_INFO sysinfo;
-	GetSystemInfo(&sysinfo);
-	num_processors = sysinfo.dwNumberOfProcessors;
-#elif defined(_SC_NPROCESSORS_CONF)
-	num_processors = sysconf(_SC_NPROCESSORS_CONF);
-#elif defined(CTL_HW) && defined(HW_NCPU)
-	int req[] = { CTL_HW, HW_NCPU };
-	size_t len = sizeof(num_processors);
-	sysctl(req, 2, &num_processors, &len, NULL, 0);
-#else
-	num_processors = 1;
-#endif
-	if (num_processors < 1)
-		num_processors = 1;
-	if (!opt_n_threads)
-		opt_n_threads = num_processors;
+	if (opt_affinity != -1) {
+		if (!opt_quiet)
+			applog(LOG_DEBUG, "Binding process to cpu mask %x", opt_affinity);
+		affine_to_cpu_mask(-1, (unsigned long)opt_affinity);
+	}
 
 #ifdef HAVE_SYSLOG_H
 	if (use_syslog)
