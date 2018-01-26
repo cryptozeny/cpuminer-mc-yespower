@@ -41,21 +41,6 @@
 #define PROGRAM_NAME		"minerd"
 #define LP_SCANTIME		60
 
-#ifdef __linux /* Linux specific policy and affinity management */
-#include <sched.h>
-static inline void drop_policy(void)
-{
-	struct sched_param param;
-	param.sched_priority = 0;
-
-#ifdef SCHED_IDLE
-	if (unlikely(sched_setscheduler(0, SCHED_IDLE, &param) == -1))
-#endif
-#ifdef SCHED_BATCH
-		sched_setscheduler(0, SCHED_BATCH, &param);
-#endif
-}
-
 enum workio_commands {
 	WC_GET_WORK,
 	WC_SUBMIT_WORK,
@@ -248,6 +233,21 @@ static time_t g_work_time;
 static pthread_mutex_t g_work_lock;
 static bool submit_old = false;
 static char *lp_id;
+
+#ifdef __linux /* Linux specific policy and affinity management */
+#include <sched.h>
+static inline void drop_policy(void)
+{
+	struct sched_param param;
+	param.sched_priority = 0;
+
+#ifdef SCHED_IDLE
+	if (unlikely(sched_setscheduler(0, SCHED_IDLE, &param) == -1))
+#endif
+#ifdef SCHED_BATCH
+		sched_setscheduler(0, SCHED_BATCH, &param);
+#endif
+}
 
 #ifdef __BIONIC__
 #define pthread_setaffinity_np(tid,sz,s) {} /* only do process affinity */
