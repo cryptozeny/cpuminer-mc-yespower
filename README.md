@@ -16,6 +16,18 @@ libcurl			http://curl.haxx.se/libcurl/
 jansson			http://www.digip.org/jansson/
 (jansson is included in-tree)
 
+Install Build Dependencies on Debian, Ubuntu and other APT-based distros:
+
+    sudo apt-get install build-essential libcurl4-openssl-dev
+
+Install Build Dependencies on Fedora, RHEL, CentOS and other yum-based distros:
+
+    sudo yum install gcc make curl-devel
+
+Install Build Dependencies on OpenSUSE and other ZYpp-based distros:
+
+    sudo zypper in gcc make libcurl-devel
+    
 ### Basic *nix build instructions
 
 ```
