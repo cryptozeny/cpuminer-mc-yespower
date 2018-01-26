@@ -3,7 +3,7 @@ fork of Jeff Garzik's reference cpuminer.
 
 License: GPLv2.  See COPYING for details.
 
-Downloads:  https://sourceforge.net/projects/cpuminer/files/
+Downloads:  https://sourceforge.net/projects/cpuminer/files/  
 Git tree:   https://github.com/pooler/cpuminer
 
 
@@ -12,7 +12,7 @@ Build Instruction
 
 ### Dependencies
 
-libcurl			http://curl.haxx.se/libcurl/
+libcurl			http://curl.haxx.se/libcurl/  
 jansson			http://www.digip.org/jansson/
 (jansson is included in-tree)
 
@@ -50,9 +50,9 @@ In the MSYS shell, run:
 
 On Ubnutu or other Linux:
 
-		./autogen.sh
-		LDFLAGS="-L depend/curl-7.38.0-devel-mingw64/lib64 -static" LIBCURL="-lcurldll" ./configure CFLAGS="-O3" --host=x86_64-w64-mingw32 --with-libcurl=depend/curl-7.38.0-devel-mingw64
-		make
+	./autogen.sh
+	LDFLAGS="-L depend/curl-7.38.0-devel-mingw64/lib64 -static" LIBCURL="-lcurldll" ./configure CFLAGS="-O3" --host=x86_64-w64-mingw32 --with-libcurl=depend/curl-7.38.0-devel-mingw64
+	make
 
 #### Architecture-specific notes
 
