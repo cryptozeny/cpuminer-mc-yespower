@@ -10,40 +10,52 @@ Git tree:   https://github.com/pooler/cpuminer
 Build Instruction
 ------------------
 
-Dependencies:
-	libcurl			http://curl.haxx.se/libcurl/
-	jansson			http://www.digip.org/jansson/
-		(jansson is included in-tree)
+### Dependencies
 
-Basic *nix build instructions:
+libcurl			http://curl.haxx.se/libcurl/
+jansson			http://www.digip.org/jansson/
+(jansson is included in-tree)
+
+### Basic *nix build instructions
+
+```
+./autogen.sh	# only needed if building from git repo
+./nomacro.pl	# in case the assembler doesn't support macros
+./configure CFLAGS="-O3" # Make sure -O3 is an O and not a zero!
+make
+```
+
+#### Notes for AIX users
+
+* To build a 64-bit binary, export OBJECT_MODE=64
+* GNU-style long options are not supported, but are accessible via configuration file
+
+### Basic Windows build instructions, using MinGW
+
+Install MinGW and the MSYS Developer Tool Kit (http://www.mingw.org/)
+
+* Make sure you have mstcpip.h in MinGW\include
+
+If using MinGW-w64, install pthreads-w64
+Install libcurl devel (http://curl.haxx.se/download.html)
+
+* Make sure you have libcurl.m4 in MinGW\share\aclocal
+* Make sure you have curl-config in MinGW\bin
+
+In the MSYS shell, run:
+
 	./autogen.sh	# only needed if building from git repo
-	./nomacro.pl	# in case the assembler doesn't support macros
-	./configure CFLAGS="-O3" # Make sure -O3 is an O and not a zero!
+	LIBCURL="-lcurldll" ./configure CFLAGS="-O3"
 	make
 
-Notes for AIX users:
-	* To build a 64-bit binary, export OBJECT_MODE=64
-	* GNU-style long options are not supported, but are accessible
-	  via configuration file
+On Ubnutu or other Linux:
 
-Basic Windows build instructions, using MinGW:
-	Install MinGW and the MSYS Developer Tool Kit (http://www.mingw.org/)
-		* Make sure you have mstcpip.h in MinGW\include
-	If using MinGW-w64, install pthreads-w64
-	Install libcurl devel (http://curl.haxx.se/download.html)
-		* Make sure you have libcurl.m4 in MinGW\share\aclocal
-		* Make sure you have curl-config in MinGW\bin
-	In the MSYS shell, run:
-		./autogen.sh	# only needed if building from git repo
-		LIBCURL="-lcurldll" ./configure CFLAGS="-O3"
-		make
-
-	On Ubnutu or other Linux:
 		./autogen.sh
 		LDFLAGS="-L depend/curl-7.38.0-devel-mingw64/lib64 -static" LIBCURL="-lcurldll" ./configure CFLAGS="-O3" --host=x86_64-w64-mingw32 --with-libcurl=depend/curl-7.38.0-devel-mingw64
 		make
 
-Architecture-specific notes:
+#### Architecture-specific notes
+
 	ARM:	No runtime CPU detection. The miner can take advantage
 		of some instructions specific to ARMv5E and later processors,
 		but the decision whether to use them is made at compile time,
@@ -65,7 +77,7 @@ Architecture-specific notes:
 		can still be built, but unavailable optimizations are left off.
 		The miner uses the VIA Padlock Hash Engine where available.
 
-Usage instructions:  Run "minerd --help" to see options.
+### Usage instructions:  Run "minerd --help" to see options.
 
 Connecting through a proxy:  Use the --proxy option.
 To use a SOCKS proxy, add a socks4:// or socks5:// prefix to the proxy host.
