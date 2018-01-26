@@ -1,10 +1,14 @@
-This is a multi-threaded CPU miner for Litecoin and Bitcoin,
+This is a multi-threaded CPU miner for Litecoin and Bitcoin and BitZeny,
 fork of Jeff Garzik's reference cpuminer.
 
 License: GPLv2.  See COPYING for details.
 
 Downloads:  https://sourceforge.net/projects/cpuminer/files/
 Git tree:   https://github.com/pooler/cpuminer
+
+
+Build Instruction
+------------------
 
 Dependencies:
 	libcurl			http://curl.haxx.se/libcurl/
@@ -32,6 +36,11 @@ Basic Windows build instructions, using MinGW:
 	In the MSYS shell, run:
 		./autogen.sh	# only needed if building from git repo
 		LIBCURL="-lcurldll" ./configure CFLAGS="-O3"
+		make
+
+	On Ubnutu or other Linux:
+		./autogen.sh
+		LDFLAGS="-L depend/curl-7.38.0-devel-mingw64/lib64 -static" LIBCURL="-lcurldll" ./configure CFLAGS="-O3" --host=x86_64-w64-mingw32 --with-libcurl=depend/curl-7.38.0-devel-mingw64
 		make
 
 Architecture-specific notes:
@@ -69,3 +78,10 @@ and all_proxy environment variables.
 Also many issues and FAQs are covered in the forum thread
 dedicated to this program,
 	https://bitcointalk.org/index.php?topic=55038.0
+
+Donations
+---------
+
+BitZeny : Zq83XMtc9gShkgi4bNNHWA4FDbMe8dFQmD
+
+Happy mining!
