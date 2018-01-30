@@ -37,6 +37,36 @@ Install Build Dependencies on OpenSUSE and other ZYpp-based distros:
 make
 ```
 
+#### macOS build instructions
+
+```bash
+brew install curl
+mkdir m4
+cp /usr/local/Cellar/curl/7.58.0/share/aclocal/libcurl.m4 m4/
+```
+
+Add one line to Makefile.am
+
+```
+ACLOCAL_AMFLAGS = -I m4
+```
+
+Edit autogen.sh 
+
+```
+# aclocal
+aclocal -I m4
+```
+
+Finaly same as *nix build
+
+```bash
+./autogen.sh
+./nomacro.pl
+./configure CFLAGS="-O3"
+make
+```
+
 #### Notes for AIX users
 
 * To build a 64-bit binary, export OBJECT_MODE=64
