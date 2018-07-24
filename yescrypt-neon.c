@@ -41,7 +41,7 @@
 #include <string.h>
 
 #include "sha256.h"
-// #include "sysendian.h"
+#include "sysendian.h"
 
 #include "yescrypt.h"
 
