@@ -56,12 +56,14 @@ struct workio_cmd {
 
 enum algos {
 	ALGO_YESCRYPT,
+	ALGO_YESPOWER,
 	ALGO_SCRYPT,		/* scrypt(1024,1,1) */
 	ALGO_SHA256D,		/* SHA-256d */
 };
 
 static const char *algo_names[] = {
 	[ALGO_YESCRYPT]		= "yescrypt",
+	[ALGO_YESPOWER]		= "yespower",
 	[ALGO_SCRYPT]		= "scrypt",
 	[ALGO_SHA256D]		= "sha256d",
 };
@@ -83,7 +85,8 @@ static int opt_retries = -1;
 static int opt_fail_pause = 30;
 int opt_timeout = 0;
 static int opt_scantime = 5;
-static enum algos opt_algo = ALGO_YESCRYPT;
+// static enum algos opt_algo = ALGO_YESCRYPT;
+static enum algos opt_algo = ALGO_YESPOWER;
 static int opt_scrypt_n = 1024;
 static int opt_n_threads;
 int64_t opt_affinity = -1L;
@@ -126,7 +129,8 @@ static char const usage[] = "\
 Usage: " PROGRAM_NAME " [OPTIONS]\n\
 Options:\n\
   -a, --algo=ALGO       specify the algorithm to use\n\
-                          yescrypt  yescrypt (default)\n\
+                          yespower  yespower 0.5 *default*\n\
+                          yescrypt  yescrypt\n\
                           scrypt    scrypt(1024, 1, 1)\n\
                           scrypt:N  scrypt(N, 1, 1)\n\
                           sha256d   SHA-256d\n\
@@ -1107,6 +1111,8 @@ static void stratum_gen_work(struct stratum_ctx *sctx, struct work *work)
 
 	if (opt_algo == ALGO_SCRYPT || opt_algo == ALGO_YESCRYPT)
 		diff_to_target(work->target, sctx->job.diff / 65536.0);
+	else if (opt_algo == ALGO_YESPOWER)
+		diff_to_target(work->target, sctx->job.diff / 65536.0);
 	else
 		diff_to_target(work->target, sctx->job.diff);
 }
@@ -1217,6 +1223,9 @@ static void *miner_thread(void *userdata)
 			case ALGO_YESCRYPT:
 				max64 = 0x000fff;
 				break;
+			case ALGO_YESPOWER:
+				max64 = 0x000fff;
+				break;
 			case ALGO_SCRYPT:
 				max64 = opt_scrypt_n < 16 ? 0x3ffff : 0x3fffff / opt_scrypt_n;
 				break;
@@ -1237,6 +1246,10 @@ static void *miner_thread(void *userdata)
 		switch (opt_algo) {
 		case ALGO_YESCRYPT:
 			rc = scanhash_yescrypt(thr_id, work.data, work.target,
+					       max_nonce, &hashes_done);
+			break;
+		case ALGO_YESPOWER:
+			rc = scanhash_yespower(thr_id, work.data, work.target,
 					       max_nonce, &hashes_done);
 			break;
 
@@ -1540,7 +1553,7 @@ static void show_version_and_exit(void)
 #if defined(__ARM_ARCH_8A)
 		" ARMv8A"
 #endif
-#if defined(__ARM_NEON) 
+#if defined(__ARM_NEON)
 		" AdvancedSIMD"
 #endif
 #endif
