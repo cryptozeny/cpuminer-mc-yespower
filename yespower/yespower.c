@@ -1,6 +1,6 @@
 #include "miner.h"
 #include "yespower.h"
-#include "yespower-best.c"
+#include "yespower-opt.c"
 
 static const yespower_params_t v1 = {YESPOWER_0_5, 2048, 8, "Client Key", 10};  // ZNY
 static const yespower_params_t v2 = {YESPOWER_0_5, 4096, 16, "Client Key", 10}; // YTN

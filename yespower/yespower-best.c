@@ -3,5 +3,5 @@
 // #elif defined __SSE2__
 // #include "yespower-sse.c"
 #else
-#include "yespower-opt.c"
+#include "yespower.c"
 #endif
