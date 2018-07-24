@@ -43,7 +43,7 @@
 // #include "../sha256.h"
 // #include "../sysendian.h"
 
-#include "../yescrypt.h"
+#include "../yescrypt.c"
 
 #include "../yescrypt-platform.c"
 
