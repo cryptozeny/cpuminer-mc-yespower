@@ -28,3 +28,6 @@ mingw32-config.cache
 
 
 *.exe
+
+.S
+.S.orig
