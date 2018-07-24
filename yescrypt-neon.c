@@ -47,6 +47,9 @@
 
 #include "yescrypt-platform.c"
 
+#include "yescrypt.c"
+
+
 #if __STDC_VERSION__ >= 199901L
 /* have restrict */
 #elif defined(__GNUC__)
