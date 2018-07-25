@@ -2,46 +2,19 @@
 #include "yespower.h"
 #include "yespower-opt.c"
 
-// ref from yespower-opt.c
-// int yespower_tls
-// (
-//   const uint8_t *src,
-//   size_t srclen,
-//   const yespower_params_t *params,
-//   yespower_binary_t *dst
-// )
-
-// ref from yespower-opt.c
-// int yespower(yespower_local_t *local,
-//     const uint8_t *src, size_t srclen,
-//     const yespower_params_t *params,
-//     yespower_binary_t *dst)
-// {
-// 	yespower_version_t version = params->version;
-// 	uint32_t N = params->N;
-// 	uint32_t r = params->r;
-// 	const uint8_t *pers = params->pers;
-// 	size_t perslen = params->perslen;
-// 	uint32_t Swidth;
-// 	size_t B_size, V_size, XY_size, need;
-// 	uint8_t *B, *S;
-// 	salsa20_blk_t *V, *XY;
-// 	pwxform_ctx_t ctx;
-// 	uint8_t sha256[32];
-// }
-
-static const yespower_params_t v1 = {YESPOWER_0_5, 2048, 8, "Client Key", 10};  // ZNY
-static const yespower_params_t v2 = {YESPOWER_0_5, 4096, 16, "Client Key", 10}; // YTN
-
-// NOTWORK >> TODO >> KOTO
-static const yespower_params_t v3 = {YESPOWER_0_5, 2048, 8, NULL, 80}; // KOTO
+static const yespower_params_t yespower_BITZENY = {YESPOWER_0_5, 2048, 8, "Client Key", 10};  // ZNY
+static const yespower_params_t yespower_YENTEN = {YESPOWER_0_5, 4096, 16, "Client Key", 10}; // YTN
+static const yespower_params_t yespower_WAVI = {YESPOWER_0_5, 4096, 32, "WaviBanana", 10}; // WAVI
+static yespower_params_t yespower_KOTO = {YESPOWER_0_5, 2048, 8, NULL, 80}; // KOTO: without const, because it obtains from loop: thanks twitter@WO01_
 
 void yespower_hash( const char *input, char *output, uint32_t len )
 {
+  yespower_KOTO.pers = input;  // KOTO: input variable
   yespower_tls( (yespower_binary_t*)input, len,
-                &v1,                                // ZNY
-                // &v2,                                // YTN
-                // &v3,                                // KOTO
+                &yespower_BITZENY,                  // ZNY
+                // &yespower_YENTEN,                   // YTN
+                // &yespower_WAVI,                     // WAVI
+                // &yespower_KOTO,                     // KOTO
                 (yespower_binary_t*)output );
 }
 
