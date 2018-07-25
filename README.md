@@ -8,7 +8,7 @@ Git tree: https://github.com/macchky/cpuminer
 *****
 # Impact
 
-`yespower` has about `2%` to `15%` better performance than old yescrypt. `yespower 0.5` has a downward compatibility mode of `old yescrypt 0.5` and provides performance improvements for yescrypt coins.
+`yespower` has about `2%` to `15%` better performance than old yescrypt. `yespower 0.5` has a downward compatibility mode of `old yescrypt 0.5` and provides performance improvements for yescrypt coins such as BitZeny(ZNY) & Yenten(YTN) & Koto & WAVI.
 
 See more details about yespower and yescrypt:  
 http://www.openwall.com/yespower/  
