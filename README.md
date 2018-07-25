@@ -1,4 +1,4 @@
-This is a multi-threaded CPU miner for BitZeny, fork of macchky's cpuminer v2.6.0.
+This is a multi-threaded CPU miner for BitZeny adding support `yespower` + `yescrypt`, fork of macchky's cpuminer v2.6.0.
 
 License: GPLv2. See COPYING for details.
 
