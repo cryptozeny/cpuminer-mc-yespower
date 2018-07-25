@@ -1,3 +1,4 @@
+# ARMv7l
 make clean ; \
 ./autogen.sh && \
 ./nomacro.pl && \
