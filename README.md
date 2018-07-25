@@ -3,8 +3,7 @@ This is a multi-threaded CPU miner for BitZeny adding support `yespower` + `yesc
 License: GPLv2. See COPYING for details.
 
 Download: https://github.com/macchky/cpuminer/releases/tag/v2.6.0
-
-Git tree: https://github.com/macchky/cpuminer
+Git tree: https://github.com/macchky/cpuminer 
 
 *****
 
