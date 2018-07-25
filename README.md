@@ -6,6 +6,15 @@ Download: https://github.com/macchky/cpuminer/releases/tag/v2.6.0
 Git tree: https://github.com/macchky/cpuminer  
 
 *****
+# Impact
+
+`yespower` has about `2%` to `15%` better performance than old yescrypt. `yespower 0.5` has a downward compatibility mode of `old yescrypt 0.5` and provides performance improvements for yescrypt coins.
+
+See more details about yespower and yescrypt:  
+http://www.openwall.com/yespower/  
+http://www.openwall.com/yescrypt/  
+
+*****
 
 # Build
 
@@ -22,7 +31,7 @@ sudo apt-get install build-essential libcurl4-openssl-dev && \
 ```
 
 ##### ARM-V7L (32bit Smartphone or RPi32)
-no yespower yet. use yescrypt instead.
+no yespower yet. use yescrypt instead. it comes with next release.   
 ```bash
 cd && \
 git clone https://github.com/cryptozeny/cpuminer-mc-yespower.git && \
@@ -49,7 +58,7 @@ LDFLAGS="-L./depend/curl-7.40.0-devel-mingw64/lib64 -static" LIBCURL="-lcurldll"
 make
 ```
 
-Static Version
+Static Version  
 TODO:
 
 ### Windows 32-bit Cross Build on Ubuntu 16.04 (NOT TESTED!!)
@@ -67,7 +76,7 @@ LDFLAGS="-L./depend/curl-7.40.0-devel-mingw32/lib -static" LIBCURL="-lcurldll" C
 make
 ```
 
-Static Version
+Static Version  
 TODO:
 
 *****
