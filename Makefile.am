@@ -17,7 +17,7 @@ minerd_SOURCES	= elist.h miner.h compat.h \
 		  cpu-miner.c util.c \
 		  sha2.c scrypt.c \
 			yescrypt.c \
-			yespower/yespower-best.c yespower/sha256.c
+			yespower/yespower.c yespower/sha256.c
 
 if USE_ASM
 if ARCH_x86
