@@ -1,141 +1,118 @@
-This is a multi-threaded CPU miner for Litecoin and Bitcoin and BitZeny,
-fork of Jeff Garzik's reference cpuminer.
+# Build
 
-License: GPLv2.  See COPYING for details.
+### Linux (Ubuntu 16.04)
 
-Downloads:  https://sourceforge.net/projects/cpuminer/files/  
-Git tree:   https://github.com/pooler/cpuminer
-
-
-Build Instruction
-------------------
-
-### Dependencies
-
-libcurl			http://curl.haxx.se/libcurl/  
-jansson			http://www.digip.org/jansson/
-(jansson is included in-tree)
-
-Install Build Dependencies on Debian, Ubuntu and other APT-based distros:
-
-    sudo apt-get install build-essential libcurl4-openssl-dev
-
-Install Build Dependencies on Fedora, RHEL, CentOS and other yum-based distros:
-
-    sudo yum install gcc make curl-devel
-
-Install Build Dependencies on OpenSUSE and other ZYpp-based distros:
-
-    sudo zypper in gcc make libcurl-devel
-    
-### Basic *nix build instructions
-
+##### Intel & Ryzen & ARM-aarch64 (64bit Smartphone or RPi64)
+full support yespower + yescrypt
+```bash
+cd && \
+git clone https://github.com/cryptozeny/cpuminer-mc-yespower.git && \
+cd cpuminer-mc-yespower && \
+sudo apt-get install build-essential libcurl4-openssl-dev && \
+./build.sh
 ```
-./autogen.sh	# only needed if building from git repo
-./nomacro.pl	# in case the assembler doesn't support macros
-./configure CFLAGS="-O3" # Make sure -O3 is an O and not a zero!
+
+##### ARM-V7L (32bit Smartphone or RPi32)
+no yespower yet. use yescrypt instead.
+```bash
+cd && \
+git clone https://github.com/cryptozeny/cpuminer-mc-yespower.git && \
+cd cpuminer-mc-yespower && \
+sudo apt-get install build-essential libcurl4-openssl-dev && \
+./build-ARMv7l.sh
+```
+
+### MacOS
+TODO:
+
+### Windows 64-bit Cross Build on Ubuntu 16.04
+
+Native Version
+```bash
+cd && \
+cd cpuminer-mc-yespower && \
+sudo apt-get install gcc-mingw-w64 && \
+cd depend && \
+sh depend-curl-7_40_0.sh && \
+cd .. && \
+./autogen.sh && \
+LDFLAGS="-L./depend/curl-7.40.0-devel-mingw64/lib64 -static" LIBCURL="-lcurldll" CFLAGS="-O3 -msse4.1 -funroll-loops -fomit-frame-pointer" ./configure --host=x86_64-w64-mingw32 --with-libcurl=depend/curl-7.40.0-devel-mingw64 && \
 make
 ```
 
-#### macOS build instructions
+Static Version
+TODO:
 
+### Windows 32-bit Cross Build on Ubuntu 16.04 (NOT TESTED!!)
+
+Native Version
 ```bash
-brew install curl
-mkdir m4
-cp /usr/local/Cellar/curl/7.58.0/share/aclocal/libcurl.m4 m4/
-```
-
-Add one line to Makefile.am
-
-```
-ACLOCAL_AMFLAGS = -I m4
-```
-
-Edit autogen.sh 
-
-```
-# aclocal
-aclocal -I m4
-```
-
-Finaly same as *nix build
-
-```bash
-./autogen.sh
-./nomacro.pl
-./configure CFLAGS="-O3"
+cd && \
+cd cpuminer-mc-yespower && \
+sudo apt-get install gcc-mingw-w64 && \
+cd depend && \
+sh depend-curl-7_40_0.sh && \
+cd .. && \
+./autogen.sh && \
+LDFLAGS="-L./depend/curl-7.40.0-devel-mingw32/lib -static" LIBCURL="-lcurldll" CFLAGS="-O3 -msse4.1 -funroll-loops -fomit-frame-pointer" ./configure --host=i686-w64-mingw32 --with-libcurl=depend/curl-7.40.0-devel-mingw32 && \
 make
 ```
 
-#### Notes for AIX users
+Static Version
+TODO:
 
-* To build a 64-bit binary, export OBJECT_MODE=64
-* GNU-style long options are not supported, but are accessible via configuration file
+*****
 
-### Basic Windows build instructions, using MinGW
+# Run
 
-Install MinGW and the MSYS Developer Tool Kit (http://www.mingw.org/)
+### Linux
+yespower (new)
+```bash
+./minerd -a yespower -o stratum+tcp://zny.semi-pool.com:3333 -u ZyWJL5qp3qZQW85HVoT3ba2feJYsZ7aQ2v
+```
 
-* Make sure you have mstcpip.h in MinGW\include
+yescrypt (old)
+```bash
+./minerd -a yescrypt -o stratum+tcp://zny.semi-pool.com:3333 -u ZyWJL5qp3qZQW85HVoT3ba2feJYsZ7aQ2v
+```
 
-If using MinGW-w64, install pthreads-w64
-Install libcurl devel (http://curl.haxx.se/download.html)
+### Windows
+yespower (new)
+```bash
+minerd.exe -a yespower -o stratum+tcp://zny.semi-pool.com:3333 -u ZyWJL5qp3qZQW85HVoT3ba2feJYsZ7aQ2v
+```
 
-* Make sure you have libcurl.m4 in MinGW\share\aclocal
-* Make sure you have curl-config in MinGW\bin
+yescrypt (old)
+```bash
+minerd.exe -a yescrypt -o stratum+tcp://zny.semi-pool.com:3333 -u ZyWJL5qp3qZQW85HVoT3ba2feJYsZ7aQ2v
+```
 
-In the MSYS shell, run:
+### MacOS
+TODO:
 
-	./autogen.sh	# only needed if building from git repo
-	LIBCURL="-lcurldll" ./configure CFLAGS="-O3"
-	make
+# Benchmark
 
-On Ubnutu or other Linux:
+### Linux
+yespower (new)
+```bash
+./minerd -a yespower --benchmark -q
+```
 
-	./autogen.sh
-	LDFLAGS="-L depend/curl-7.38.0-devel-mingw64/lib64 -static" LIBCURL="-lcurldll" ./configure CFLAGS="-O3" --host=x86_64-w64-mingw32 --with-libcurl=depend/curl-7.38.0-devel-mingw64
-	make
+yescrypt (old)
+```bash
+./minerd -a yescrypt --benchmark -q
+```
 
-#### Architecture-specific notes
+### Windows
+yespower (new)
+```bash
+minerd.exe -a yespower --benchmark -q
+```
 
-	ARM:	No runtime CPU detection. The miner can take advantage
-		of some instructions specific to ARMv5E and later processors,
-		but the decision whether to use them is made at compile time,
-		based on compiler-defined macros.
-		To use NEON instructions, add "-mfpu=neon" to CFLAGS.
-	PowerPC: No runtime CPU detection.
-		To use AltiVec instructions, add "-maltivec" to CFLAGS.
-	x86:	The miner checks for SSE2 instructions support at runtime,
-		and uses them if they are available.
-	x86-64:	The miner can take advantage of AVX, AVX2 and XOP instructions,
-		but only if both the CPU and the operating system support them.
-		    * Linux supports AVX starting from kernel version 2.6.30.
-		    * FreeBSD supports AVX starting with 9.1-RELEASE.
-		    * Mac OS X added AVX support in the 10.6.8 update.
-		    * Windows supports AVX starting from Windows 7 SP1 and
-		      Windows Server 2008 R2 SP1.
-		The configure script outputs a warning if the assembler
-		doesn't support some instruction sets. In that case, the miner
-		can still be built, but unavailable optimizations are left off.
-		The miner uses the VIA Padlock Hash Engine where available.
+yescrypt (old)
+```bash
+minerd.exe -a yescrypt --benchmark -q
+```
 
-### Usage instructions:  Run "minerd --help" to see options.
-
-Connecting through a proxy:  Use the --proxy option.
-To use a SOCKS proxy, add a socks4:// or socks5:// prefix to the proxy host.
-Protocols socks4a and socks5h, allowing remote name resolving, are also
-available since libcurl 7.18.0.
-If no protocol is specified, the proxy is assumed to be a HTTP proxy.
-When the --proxy option is not used, the program honors the http_proxy
-and all_proxy environment variables.
-
-Also many issues and FAQs are covered in the forum thread
-dedicated to this program,
-	https://bitcointalk.org/index.php?topic=55038.0
-
-Donations
----------
-
-BitZeny : Zq83XMtc9gShkgi4bNNHWA4FDbMe8dFQmD
-
-Happy mining!
+### MacOS
+TODO:
