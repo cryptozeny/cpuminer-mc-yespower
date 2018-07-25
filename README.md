@@ -2,8 +2,8 @@ This is a multi-threaded CPU miner for BitZeny adding support `yespower` + `yesc
 
 License: GPLv2. See COPYING for details.
 
-Download: https://github.com/macchky/cpuminer/releases/tag/v2.6.0
-Git tree: https://github.com/macchky/cpuminer 
+Download: https://github.com/macchky/cpuminer/releases/tag/v2.6.0  
+Git tree: https://github.com/macchky/cpuminer  
 
 *****
 
@@ -142,8 +142,10 @@ https://github.com/semipool/zny.semi-pool.com/blob/master/README.md
 
 # Donations
 
-** cpuminer-mc 2.6.0 by macchky@github **
-ZNY donation address: Zq83XMtc9gShkgi4bNNHWA4FDbMe8dFQmD (macchky)
+cpuminer-mc 2.6.0 by macchky@github  
+ZNY donation address: `Zq83XMtc9gShkgi4bNNHWA4FDbMe8dFQmD` (macchky)
 
-** yespower 0.5 support by cryptozeny@github **
-ZNY donation address: ZyWJL5qp3qZQW85HVoT3ba2feJYsZ7aQ2v (cryptozeny)
+yespower 0.5 support by cryptozeny@github    
+ZNY donation address: `ZyWJL5qp3qZQW85HVoT3ba2feJYsZ7aQ2v` (cryptozeny)
+
+Happy Mining!
