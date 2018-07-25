@@ -90,6 +90,8 @@ minerd.exe -a yescrypt -o stratum+tcp://zny.semi-pool.com:3333 -u ZyWJL5qp3qZQW8
 ### MacOS
 TODO:
 
+*****
+
 # Benchmark
 
 ### Linux
