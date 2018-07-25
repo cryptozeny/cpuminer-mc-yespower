@@ -116,3 +116,13 @@ minerd.exe -a yescrypt --benchmark -q
 
 ### MacOS
 TODO:
+
+*****
+
+# 주의 注意 WARNING
+본인의 지갑주소 및 올바른 포트번호를 사용하세요.
+本人の財布アドレス、および正しいポート番号を使用してください。
+Please use your own wallet address and correct port number.
+
+### 채굴 설명서 マイニングマニュアル Mining Manual
+https://github.com/semipool/zny.semi-pool.com/blob/master/README.md
