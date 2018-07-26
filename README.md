@@ -2,13 +2,16 @@ This is a multi-threaded CPU miner for BitZeny adding support `yespower` + `yesc
 
 License: GPLv2. See COPYING for details.
 
-Download: https://github.com/macchky/cpuminer/releases/tag/v2.6.0  
 Git tree: https://github.com/macchky/cpuminer  
 
 *****
 # Impact
 
 `yespower` has about `2%` to `15%` better performance than old yescrypt. `yespower 0.5` has a downward compatibility mode of `old yescrypt 0.5` and provides performance improvements for yescrypt coins such as BitZeny(ZNY) & Yenten(YTN) & Koto & WAVI.
+
+`17%`   performance improvements on `ARM-aarch64` (Smartphone & RPi64)  
+`3~10%` performance improvements on `Intel`  
+`2%`    performance improvements on `AMD Ryzen`   
 
 See more details about yespower and yescrypt:  
 http://www.openwall.com/yespower/  
@@ -20,7 +23,7 @@ http://www.openwall.com/yescrypt/
 
 ### Linux (Ubuntu 16.04)
 
-##### Intel & Ryzen & ARM-aarch64 (64bit Smartphone or RPi64)
+##### Intel & Ryzen
 full support yespower + yescrypt
 ```bash
 cd && \
@@ -30,8 +33,18 @@ sudo apt-get install build-essential libcurl4-openssl-dev && \
 ./build.sh
 ```
 
+##### ARM-aarch64 (64bit Smartphone or RPi64) Boost `17%`
+full support yespower + yescrypt
+```bash
+cd && \
+git clone https://github.com/cryptozeny/cpuminer-mc-yespower.git && \
+cd cpuminer-mc-yespower && \
+sudo apt-get install build-essential libcurl4-openssl-dev && \
+./build-aarch64.sh
+```
+
 ##### ARM-V7L (32bit Smartphone or RPi32)
-no yespower yet. use yescrypt instead. it comes with next release.   
+no yespower yet. please use `-a yescrypt` option until next release.
 ```bash
 cd && \
 git clone https://github.com/cryptozeny/cpuminer-mc-yespower.git && \
