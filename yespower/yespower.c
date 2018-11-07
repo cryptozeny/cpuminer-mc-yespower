@@ -6,12 +6,15 @@ static const yespower_params_t yespower_BITZENY = {YESPOWER_0_5, 2048, 8, "Clien
 static const yespower_params_t yespower_YENTEN = {YESPOWER_0_5, 4096, 16, "Client Key", 10}; // YTN
 static const yespower_params_t yespower_WAVI = {YESPOWER_0_5, 4096, 32, "WaviBanana", 10}; // WAVI
 static yespower_params_t yespower_KOTO = {YESPOWER_0_5, 2048, 8, NULL, 80}; // KOTO: without const, because it obtains from loop: thanks twitter@WO01_
+static const yespower_params_t yespower_1_0_sugarchain = {YESPOWER_1_0, 2048, 32, NULL, 0}; // SUGAR
+
 
 void yespower_hash( const char *input, char *output, uint32_t len )
 {
   yespower_KOTO.pers = input;  // KOTO: input variable
   yespower_tls( (yespower_binary_t*)input, len,
-                &yespower_BITZENY,                  // ZNY
+                &yespower_1_0_sugarchain,
+                // &yespower_BITZENY,                  // ZNY
                 // &yespower_YENTEN,                   // YTN
                 // &yespower_WAVI,                     // WAVI
                 // &yespower_KOTO,                     // KOTO
